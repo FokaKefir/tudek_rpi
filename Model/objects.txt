@@ -1,0 +1,7 @@
+car
+door
+bus
+bicycle
+dining table
+chair
+person
