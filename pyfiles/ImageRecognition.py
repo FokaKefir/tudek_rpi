@@ -154,6 +154,10 @@ class ImageRecognition:
         
         # All the results have been drawn on the frame, so it's time to display it.
         cv2.imshow('Object detector', self.frame)
+        
+        # Press 'q' to quit
+        if cv2.waitKey(1) == ord('q'):
+            self.cond = False
     
     
     def calculatingImageSize(self):
@@ -165,8 +169,11 @@ class ImageRecognition:
         
         
     def loop(self):
+        
+        self.cond = True
+        
         #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
-        while True:
+        while self.cond:
         
             # Start timer (for calculating frame rate)
             self.t1 = cv2.getTickCount()
@@ -221,9 +228,7 @@ class ImageRecognition:
                 self.audio.say(strNewAudioWord)
                 time.sleep(CONSTANTS.INT_WAIT_TIME_SECOND)
         
-            # Press 'q' to quit
-            if cv2.waitKey(1) == ord('q'):
-                break
+            
         
         # Clean up
         cv2.destroyAllWindows()

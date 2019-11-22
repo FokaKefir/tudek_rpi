@@ -1,1 +1,1 @@
-python3 pyfiles/run.py
+python3 pyfiles/UltrasonicSensor.py
