@@ -1,2 +1,2 @@
 source bin/activate
-python3 ImageRecognition.py
+python3 pyfiles/ImageRecognition.py
