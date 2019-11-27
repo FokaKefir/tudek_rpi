@@ -4,10 +4,12 @@ import signal
 import sys
 import os
 import constants as CONSTANTS
-import keyboard
+import tty
+import curses
+import getch 
 
 
-
+gpio.setwarnings(False)
 gpio.setmode(gpio.BCM)
 
 units = [(CONSTANTS.ECHO_A, CONSTANTS.TRIG_A, CONSTANTS.MOTOR_A, CONSTANTS.GPIO_MOTOR_NAME_A),
@@ -44,7 +46,8 @@ def initWidgets():
             
             initWidget(unit[0], unit[1], unit[2], unit[3])
             
-    time.sleep(3)
+    time.sleep(0)
+    os.popen("gpio readall")
 
 
 def measure(echo, trig):
@@ -83,9 +86,9 @@ def turnUpMotor(distance, motor, motorName):
     
     if distance<maxDistance+10:
         percent = int(int(distance/10) * 10)
-        #print("Distance: ", distance, "cm")
+        print("Distance: ", distance, "cm")
         percentOn = maxDistance - percent
-        #print("On: ", percentOn)
+        print("On: ", percentOn)
         
         motorOn(motorName, percentOn)
         
@@ -94,25 +97,28 @@ def turnUpMotor(distance, motor, motorName):
         motorOff(motorName)
         
     
-    
+
 
 def loop():
 
+    chrPressed = 0
     while True:
 
         for unit in units:
             if(unit[0] != 0):
                 distance = measure(unit[0], unit[1])
+                
                 turnUpMotor(distance, unit[2], unit[3])
                 
+        #TODO making a mode how to close the program
+                
         
-            
-        time.sleep(CONSTANTS.SLEEP_TIME)
 
         
     
 def main():
     initWidgets()
+    
     loop()
     gpio.cleanup()
     
