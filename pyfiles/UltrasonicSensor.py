@@ -12,18 +12,22 @@ import getch
 gpio.setwarnings(False)
 gpio.setmode(gpio.BCM)
 
-units = [(CONSTANTS.ECHO_A, CONSTANTS.TRIG_A, CONSTANTS.MOTOR_A, CONSTANTS.GPIO_MOTOR_NAME_A),
-          (CONSTANTS.ECHO_B, CONSTANTS.TRIG_B, CONSTANTS.MOTOR_B, CONSTANTS.GPIO_MOTOR_NAME_B),
-          (CONSTANTS.ECHO_C, CONSTANTS.TRIG_C, CONSTANTS.MOTOR_C, CONSTANTS.GPIO_MOTOR_NAME_C)]
-
+units = [(CONSTANTS.ECHO_A, CONSTANTS.TRIG_A, CONSTANTS.MOTOR_A, None),
+          (CONSTANTS.ECHO_B, CONSTANTS.TRIG_B, CONSTANTS.MOTOR_B, None),
+          (CONSTANTS.ECHO_C, CONSTANTS.TRIG_C, CONSTANTS.MOTOR_C, None)]
+pwm = [None, None, None]
 maxDistance = CONSTANTS.INT_MAX_DISTANCE
 def close(signal, frame):
     print("\nTurning off ultrasonic distance detection...\n")
     gpio.cleanup()
     sys.exit(0)
 
-def initWidget(echo, trig, motor, motorName):
+def initWidget(unit, index):
     signal.signal(signal.SIGINT, close)
+
+    echo = unit[0]
+    trig = unit[1]
+    motor = unit[2]
 
     # set GPIO input and output channels
     gpio.setup(trig, gpio.OUT)
@@ -33,21 +37,22 @@ def initWidget(echo, trig, motor, motorName):
     gpio.output(trig, False)
     gpio.output(motor, False)
     
-    strPwmActivate = "gpio mode " + str(motorName) + " pwm"
+    motorPwm = gpio.PWM(motor, 100)
+    motorPwm.start(0)
     
-    os.popen(strPwmActivate)
-    motorOff(motorName)
+    motorTurn(motorPwm, 0)
     
-    
+    pwm[index] = motorPwm
 
 def initWidgets():
+    i = 0
     for unit in units:
         if(unit[0] != 0):
             
-            initWidget(unit[0], unit[1], unit[2], unit[3])
-            
+            initWidget(unit, i)
+        i = i+1    
     time.sleep(0)
-    os.popen("gpio readall")
+    print("Init is already okay")
 
 
 def measure(echo, trig):
@@ -61,41 +66,32 @@ def measure(echo, trig):
     while gpio.input(echo)==True:
         pulseEnd = time.time()
         
-    
     pulseDuration = pulseEnd - pulseStart
-
     distance = pulseDuration * CONSTANTS.INT_SOUND_SPEED
-    
     distance = round(distance, 2)
     
     return distance
 
 
-def motorOff(motorName):
-    strCommand = "gpio pwm " + str(motorName) + " 0"
-    os.popen(strCommand)
+def motorTurn(motorName, percent):
+    #print(percent)
+    motorName.ChangeDutyCycle(percent)
+     
+   
 
-
-def motorOn(motorName, percent):
-    pwm = (CONSTANTS.INT_MAX_PWM * percent) / 100
-    strCommand = "gpio pwm " + str(motorName) + " " + str(pwm)
-    os.popen(strCommand)
-    
-
-def turnUpMotor(distance, motor, motorName):
+def turnUpMotor(distance, motor, motorPwm):
     
     if distance<maxDistance+10:
         percent = int(int(distance/10) * 10)
-        print("Distance: ", distance, "cm")
+        #print("Distance: ", distance, "cm")
         percentOn = maxDistance - percent
-        print("On: ", percentOn)
+        #print("On: ", percentOn)
         
-        motorOn(motorName, percentOn)
-        
+        motorTurn(motorPwm, percentOn)
         
     else:
-        motorOff(motorName)
         
+        motorTurn(motorPwm, 0)
     
 
 
@@ -103,13 +99,16 @@ def loop():
 
     chrPressed = 0
     while True:
-
+        i=0
         for unit in units:
             if(unit[0] != 0):
                 distance = measure(unit[0], unit[1])
                 
-                turnUpMotor(distance, unit[2], unit[3])
+                turnUpMotor(distance, unit[2], pwm[i])
                 
+            time.sleep(CONSTANTS.SLEEP_TIME) 
+            i = i+1
+           
         #TODO making a mode how to close the program
                 
         
