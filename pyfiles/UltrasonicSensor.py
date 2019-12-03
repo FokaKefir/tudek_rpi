@@ -60,11 +60,15 @@ def measure(echo, trig):
     time.sleep(0.00001)
     gpio.output(trig, False)
     
+    pulseStart = 0
+    
     while gpio.input(echo)==False:
         pulseStart = time.time()
     
     while gpio.input(echo)==True:
         pulseEnd = time.time()
+        if ((pulseEnd - pulseStart) > CONSTANTS.MAX_TIME):
+            return -1
         
     pulseDuration = pulseEnd - pulseStart
     distance = pulseDuration * CONSTANTS.INT_SOUND_SPEED
@@ -81,9 +85,9 @@ def motorTurn(motorName, percent):
 
 def turnUpMotor(distance, motor, motorPwm):
     
-    if distance<maxDistance+10:
+    if distance<=maxDistance and distance != -1:
         percent = int(int(distance/10) * 10)
-        #print("Distance: ", distance, "cm")
+        
         percentOn = maxDistance - percent
         #print("On: ", percentOn)
         
@@ -103,6 +107,7 @@ def loop():
         for unit in units:
             if(unit[0] != 0):
                 distance = measure(unit[0], unit[1])
+                print("Distance: ", distance, "cm")
                 
                 turnUpMotor(distance, unit[2], pwm[i])
                 
