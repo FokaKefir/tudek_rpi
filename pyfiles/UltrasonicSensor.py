@@ -52,7 +52,7 @@ def initWidgets():
             initWidget(unit, i)
         i = i+1    
     time.sleep(0)
-    print("Init is already okay")
+    print("INFO: Initialized GPIO widgets.")
 
 
 def measure(echo, trig):
@@ -107,7 +107,7 @@ def loop():
         for unit in units:
             if(unit[0] != 0):
                 distance = measure(unit[0], unit[1])
-                print("Distance: ", distance, "cm")
+                #print("Distance: ", distance, "cm")
                 
                 turnUpMotor(distance, unit[2], pwm[i])
                 

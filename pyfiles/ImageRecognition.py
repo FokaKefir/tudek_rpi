@@ -206,7 +206,7 @@ class ImageRecognition:
             intSize = 0.0
             for self.i in range(len(self.scores)):
                 if ((self.scores[self.i] > self.minConfThreshold) and (self.scores[self.i] <= 1.0)):
-                    self.putInFrame()
+                    #self.putInFrame()
                     
                     actuallyObjectName = self.labels[int(self.classes[self.i])]
                     actuallySize = self.calculatingImageSize()
@@ -215,7 +215,7 @@ class ImageRecognition:
                         intSize = actuallySize
                         
         
-            self.openWindow()
+            #self.openWindow()
             
             # Calculate framerate
             self.t2 = cv2.getTickCount()
@@ -223,8 +223,6 @@ class ImageRecognition:
             self.frameRateCalc = 1/self.time1
             
             if intSize != 0:
-                strOut = str(intSize) + " " + strNewAudioWord
-                print(strOut)
                 self.audio.say(strNewAudioWord)
                 time.sleep(CONSTANTS.INT_WAIT_TIME_SECOND)
         
