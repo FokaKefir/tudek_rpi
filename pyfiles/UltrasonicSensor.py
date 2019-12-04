@@ -82,17 +82,16 @@ def motorTurn(motorName, percent):
     motorName.ChangeDutyCycle(percent)
      
 def getPercent(distance):
-	calcPercent = (distance * 100) / maxDistance
-	return calcPercent
+    calcPercent = (distance * 100) / maxDistance
+    return calcPercent
           
 
-def turnUpMotor(distance, motor, motorPwm):
+def controllingMotor(distance, motor, motorPwm):
     
     if distance<=maxDistance and distance != -1:
         percent = getPercent(distance)
         
-        percentOn = maxDistance - percent
-        #print("On: ", percentOn)
+        percentOn = 100 - percent
         
         motorTurn(motorPwm, percentOn)
         
@@ -112,7 +111,7 @@ def loop():
                 distance = measure(unit[0], unit[1])
                 #print("Distance: ", distance, "cm")
                 
-                turnUpMotor(distance, unit[2], pwm[i])
+                controllingMotor(distance, unit[2], pwm[i])
                 
             time.sleep(CONSTANTS.SLEEP_TIME) 
             i = i+1
