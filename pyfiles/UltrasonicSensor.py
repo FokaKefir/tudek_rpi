@@ -6,7 +6,7 @@ import os
 import constants as CONSTANTS
 import tty
 import curses
-import getch 
+
 
 
 gpio.setwarnings(False)

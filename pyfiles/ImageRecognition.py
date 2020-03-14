@@ -206,7 +206,7 @@ class ImageRecognition:
             intSize = 0.0
             for self.i in range(len(self.scores)):
                 if ((self.scores[self.i] > self.minConfThreshold) and (self.scores[self.i] <= 1.0)):
-                    #self.putInFrame()
+                    self.putInFrame()
                     
                     actuallyObjectName = self.labels[int(self.classes[self.i])]
                     actuallySize = self.calculatingImageSize()
@@ -215,7 +215,7 @@ class ImageRecognition:
                         intSize = actuallySize
                         
         
-            #self.openWindow()
+            self.openWindow()
             
             # Calculate framerate
             self.t2 = cv2.getTickCount()
@@ -243,7 +243,5 @@ def main():
     
     
 main()
-    
-    
     
     
