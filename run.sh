@@ -1,0 +1,1 @@
+bash run_app.sh & bash run_ir.sh

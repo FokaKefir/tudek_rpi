@@ -168,7 +168,25 @@ class ImageRecognition:
         x = self.boxes[i][3] - self.boxes[i][1]
         y = self.boxes[i][2] - self.boxes[i][0]
         return x*y
+      
+    def sendInfoToGui(self, strText):
+        try:
+            fileObject = open("informations/object.info", "w")
+            fileObject.write(strText)
+            fileObject.close()
+        except:
+            pass
+    
+    def readFromFile(self):
+        strInfo = "open"
+        try:
+            fileRun = open("informations/run.info", "r")
+            strInfo = fileRun.read()
+            fileRun.close()
+        except:
+            print("cannot open the rin.info file")
         
+        return strInfo
         
     def loop(self):
         
@@ -227,11 +245,20 @@ class ImageRecognition:
             if intSize != 0:
                 self.audio.say(strNewAudioWord)
                 time.sleep(CONSTANTS.INT_WAIT_TIME_SECOND)
+              
+            strInfo = strNewAudioWord
+            self.sendInfoToGui(strInfo)
+            if self.readFromFile() == "close":
+                self.cond = False
+            
         
             
         
         # Clean up
-        cv2.destroyAllWindows()
+        try:
+            cv2.destroyAllWindows()
+        except:
+            pass
         self.videostream.stop()
         
         
@@ -247,3 +274,4 @@ def main():
 main()
     
     
+
