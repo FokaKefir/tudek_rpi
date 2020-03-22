@@ -4,44 +4,42 @@ import time
 import os
 
 def stop():
-	win.destroy()
+    win.destroy()
 
 def updateStrings():
-	try:
-		newPath = os.path.relpath("..\\informations\\distance.info", currentPath)
-		fileDistance = open(newPath, "r")
-	
-		distanceLeft = fileDistance.readline()
-		distanceCenter = fileDistance.readline()
-		distanceRight = fileDistance.readline() + '\n'
+    try:
+        fileDistance = open("informations/distance.info", "r")
+    
+        distanceLeft = fileDistance.readline()
+        distanceCenter = fileDistance.readline()
+        distanceRight = fileDistance.readline() + '\n'
 
-		strDistanceLeft.set(distanceLeft + " cm")
-		strDistanceCenter.set(distanceCenter + " cm")
-		strDistanceRight.set(distanceRight + " cm")
-	
-		fileDistance.close()
-	except:
-		pass
-	
-	try:
-		newPath = os.path.relpath("..\\informations\\object.info", currentPath)
-		fileObject = open(newPath, "r")
-		obejct = fileObject.read()
-		strObject.set("Obejct: " + obejct)
-		fileObject.close()
-	except:
-		pass
+        strDistanceLeft.set(distanceLeft + " cm")
+        strDistanceCenter.set(distanceCenter + " cm")
+        strDistanceRight.set(distanceRight + " cm")
+    
+        fileDistance.close()
+    except:
+        pass
+    
+    try:
+        
+        fileObject = open("informations/object.info", "r")
+        obejct = fileObject.read()
+        strObject.set("Obejct: " + obejct)
+        fileObject.close()
+    except:
+        pass
 
 def updateRunFile(strOut):
-	while True:
-		try:
-			newPath = os.path.relpath("..\\informations\\run.info", currentPath)
-			fileRun = open(newPath, "w")
-			fileRun.write(strOut)
-			fileRun.close()
-			break
-		except:
-			pass
+    while True:
+        try:
+            fileRun = open("informations/run.info", "w")
+            fileRun.write(strOut)
+            fileRun.close()
+            break
+        except:
+            pass
 
 
 win = tk.Tk()
@@ -67,12 +65,12 @@ print("Windows is open.")
 updateRunFile("open")
 
 while True:
-	updateStrings()
-	try:
-		win.update()
-	except :
-		print("Windows is closed.")
-		updateRunFile("close")
-		break
-		
+    updateStrings()
+    try:
+        win.update()
+    except :
+        print("Windows is closed.")
+        updateRunFile("close")
+        break
+        
 
