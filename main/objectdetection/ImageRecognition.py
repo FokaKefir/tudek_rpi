@@ -7,7 +7,7 @@ import sys
 import time
 from threading import Thread
 import importlib.util
-import constants as CONSTANTS
+import constants_ir as CONSTANTS
 import Audio
 
 # If tensorflow is not installed, import interpreter from tflite_runtime, else import from regular tensorflow
@@ -90,8 +90,10 @@ class ImageRecognition:
         # Path to label map file
         self.pathToLabels = os.path.join(self.cwdPath, self.modelName, self.labelmapName)
         
-            # Path to the objects map file
+        # Path to the objects map file
         self.pathToObjects = os.path.join(self.cwdPath, self.modelName, self.objectsName)
+        
+        print(self.pathToLabels)
         
         # Load the label map
         with open(self.pathToLabels, 'r') as f:
