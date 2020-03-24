@@ -188,6 +188,32 @@ class ImageRecognition:
         
         return strInfo
         
+    def getDir(self):
+        dir = ""
+
+        i = self.i
+        right = boxes[i][1]
+        left = boxes[i][3]
+
+        RIGHT = CONSTANTS.FLOAT_RIGHT
+        LEFT = CONSTANTS.FLOAT_LEFT
+
+        if left < LEFT and right < LEFT:
+            dir = "left"
+        elif left < LEFT and right >= LEFT and right <= RIGHT:
+            dir = "left"
+        elif left >= LEFT and left <= RIGHT and right >= LEFT and right <= RIGHT:
+            dir = "mid"
+        elif left < LEFT and right > RIGHT:
+            dir = "mid"
+        elif left >= LEFT and left <= RIGHT and right > RIGHT:
+            dir = "right"
+        elif left > RIGHT and right > RIGHT:
+            dir = "right"
+
+        return dir 
+
+
     def loop(self):
         
         self.cond = True
@@ -223,6 +249,7 @@ class ImageRecognition:
         
             # Loop over all detections and draw detection box if confidence is above minimum threshold
             strNewAudioWord = None
+            strDir = ""
             intSize = 0.0
             for self.i in range(len(self.scores)):
                 if ((self.scores[self.i] > self.minConfThreshold) and (self.scores[self.i] <= 1.0)):
@@ -232,6 +259,7 @@ class ImageRecognition:
                     actuallySize = self.calculatingImageSize()
                     if (self.myObjects.count(str(actuallyObjectName))) and (actuallySize > intSize):
                         strNewAudioWord = actuallyObjectName
+                        strDir = self.getDir()
                         intSize = actuallySize
                         
         
@@ -243,15 +271,15 @@ class ImageRecognition:
             self.frameRateCalc = 1/self.time1
             
             if intSize != 0:
-                self.audio.say(strNewAudioWord)
+                self.audio.say(strNewAudioWord + " " + strDir)
                 time.sleep(CONSTANTS.INT_WAIT_TIME_SECOND)
               
-            strInfo = strNewAudioWord
+            strInfo = strNewAudioWord + " " + strDir
             self.sendInfoToGui(strInfo)
+
             if self.readFromFile() == "close":
                 self.cond = False
             
-        
             
         
         # Clean up
@@ -272,6 +300,3 @@ def main():
     
     
 main()
-    
-    
-
