@@ -20,16 +20,34 @@ def calcPrecent(dis):
     percent = 100 - inverzPercent
     return percent
 
+def sendInfoToGui(distances):
+    strInfo = str(distances[0]) + "\n" + str(distances[1]) + "\n" + str(distances[2])
+    try:
+        fileDis = open("informations/distance.info", 'w')
+        fileDis.write(strInfo)
+        fileDis.close()
+    except:
+        pass
 
+def readFromFile():
+    strInfo = "open"
+    try:
+        fileRun = open("informations/run.info", "r")
+        strInfo = fileRun.read()
+        fileRun.close()
+    except:
+        print("cannot open the run.info file")
+        
+    return strInfo
 
 
 def loop(units):
     cond = True
     while cond:
-            
-    
+        distances = []
         for unit in units:
             distance = unit.getDistance()
+            distances.append(distance)
             percent = calcPercent(distance)
             if percent < 0:
                 unit.powerMotor(percent)
@@ -37,6 +55,11 @@ def loop(units):
                 unit.powerMotor(0)
                 
             time.sleep(CONSTANTS.SLEEP_TIME)
+        
+        if readFromFile() == "close":
+            cond = False
+            
+        sendInfoToGui(distances)
             
 
 
