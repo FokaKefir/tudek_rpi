@@ -12,9 +12,23 @@ class VibrationUnit:
         self.port = gpioPort
         self.distance = None
         
+        gpio.setwarnings(False)
+        gpio.setmode(gpio.BCM)
+        
+        motor = gpio.PWM(self.port, 100)
+        motor.start(0)
+        powerMotor(0)
+       
         
     def getDistance(self):
         return self.senzor.get_distance() / 10
         
     def closeSenzor(self):
         self.senzor.stop_ranging()
+        
+    def powerMotor(self, percent):
+        motor.ChangeDutyCycle(percent)
+        
+
+        
+        
