@@ -3,7 +3,7 @@ import time
 import signal
 import sys
 import os
-import constants as CONSTANTS
+import constants_dm as CONSTANTS
 import tty
 import curses
 
