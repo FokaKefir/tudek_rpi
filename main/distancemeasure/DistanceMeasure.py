@@ -2,21 +2,33 @@ import time
 import constants_dm as CONSTANTS
 import VL53L1X
 from VibrationUnit import VibrationUnit
+import RPi.GPIO as gpio
+import smbus
 
 def createUnits():
     gpio.setwarnings(False)
     gpio.setmode(gpio.BCM)
     
-    unitLeft = VibrationUnit(CONSTANTS.ADDRESS_LEFT, CONSTANTS.PORT_LEFT)
-    unitMid = VibrationUnit(CONSTANTS.ADDRESS_MID, CONSTANTS.PORT_MID)
-    unitRight = VibrationUnit(CONSTANTS.ADDRESS_RIGHT, CONSTANTS.PORT_RIGHT)
+    setNewChannel(ch=CONSTANTS.I2C_CH_1)
+    unitLeft = VibrationUnit(CONSTANTS.SENZOR_ADDRESS, CONSTANTS.I2C_CH_1, CONSTANTS.PORT_LEFT)
     
-    units = [unitLeft, unitMidm unitRight]
+    setNewChannel(ch=CONSTANTS.I2C_CH_2)
+    unitMid = VibrationUnit(CONSTANTS.SENZOR_ADDRESS, CONSTANTS.I2C_CH_2, CONSTANTS.PORT_MID)
+    
+    setNewChannel(ch=CONSTANTS.I2C_CH_3)
+    unitRight = VibrationUnit(CONSTANTS.SENZOR_ADDRESS, CONSTANTS.I2C_CH_3, CONSTANTS.PORT_RIGHT)
+    
+    units = []
+    units.append(unitLeft)
+    units.append(unitMid)
+    units.append(unitRight)
+    
+    
     return units
 
-def calcPrecent(dis):
+def calcPercent(dis):
     maxDis = CONSTANTS.INT_MAX_DISTANCE
-    inverzPrecent = (dis * 100) / maxDis
+    inverzPercent = (dis * 100) / maxDis
     percent = 100 - inverzPercent
     return percent
 
@@ -40,12 +52,22 @@ def readFromFile():
         
     return strInfo
 
+def setNewChannel(unit=None, ch=None):
+    if ch is None:
+        channel = unit.getChannel()
+        bus = smbus.SMBus(1)
+        bus.write_byte(CONSTANTS.I2C_ADDRESS, channel)
+    else:
+        bus = smbus.SMBus(1)
+        bus.write_byte(CONSTANTS.I2C_ADDRESS, ch)
+
 
 def loop(units):
     cond = True
     while cond:
         distances = []
         for unit in units:
+            setNewChannel(unit)
             distance = unit.getDistance()
             distances.append(distance)
             percent = calcPercent(distance)
@@ -55,17 +77,15 @@ def loop(units):
                 unit.powerMotor(0)
                 
             time.sleep(CONSTANTS.SLEEP_TIME)
+            
         
         if readFromFile() == "close":
             cond = False
             
         sendInfoToGui(distances)
-            
-
+    
 
 def closeUnits(units):
-    for unit in units:
-        unit.closeSenzor()
         
     gpio.cleanup()
 
