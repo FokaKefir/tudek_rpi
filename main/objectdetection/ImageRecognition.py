@@ -191,25 +191,28 @@ class ImageRecognition:
     def getDir(self, index):
         strDir = ""
 
-        i = index
-        right = self.boxes[i][3]
-        left = self.boxes[i][1]
+        right = self.boxes[index][3]
+        left = self.boxes[index][1]
 
-        RIGHT = CONSTANTS.FLOAT_RIGHT
-        LEFT = CONSTANTS.FLOAT_LEFT
+        if left < CONSTANTS.FLOAT_LEFT and right > CONSTANTS.FLOAT_RIGHT:
+            strDir = "mid"
+        else:
+            if left < 0:
+                left = 0
+            if right > 1:
+                right = 1
+            
+            disLeft = left
+            disRight = (1 - right)
 
-        if left < LEFT and right < LEFT:
-            strDir = "left"
-        elif left < LEFT and right >= LEFT and right <= RIGHT:
-            strDir = "left"
-        elif left >= LEFT and left <= RIGHT and right >= LEFT and right <= RIGHT:
-            strDir = "mid"
-        elif left < LEFT and right > RIGHT:
-            strDir = "mid"
-        elif left >= LEFT and left <= RIGHT and right > RIGHT:
-            strDir = "right"
-        elif left > RIGHT and right > RIGHT:
-            strDir = "right"
+            rate = disLeft / disRight
+            if rate >= 2:
+                strDir = "right"
+            elif rate <= 0.5:
+                strDir = "left"
+            else:
+                strDir = "mid"
+            
 
         return strDir 
 
@@ -253,7 +256,8 @@ class ImageRecognition:
             intSize = 0.0
             for self.i in range(len(self.scores)):
                 if ((self.scores[self.i] > self.minConfThreshold) and (self.scores[self.i] <= 1.0)):
-                    self.putInFrame()
+                    if CONSTANTS.OPEN_IMG:
+                        self.putInFrame()
                     
                     actuallyObjectName = self.labels[int(self.classes[self.i])]
                     actuallySize = self.calculatingImageSize()
@@ -262,8 +266,8 @@ class ImageRecognition:
                         intSize = actuallySize
                         index = self.i
                         
-        
-            self.openWindow()
+            if CONSTANTS.OPEN_IMG:
+                self.openWindow()
             
             # Calculate framerate
             self.t2 = cv2.getTickCount()

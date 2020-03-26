@@ -42,6 +42,22 @@ def updateRunFile(strOut):
             pass
 
 
+def clearFiles():
+    try:
+        fileObject = open("informations/object.info", "w")
+        fileObject.write("")
+        fileObject.close()
+    except:
+        pass
+    
+    
+    try:
+        fileDistance = open("informations/distance.info", "w")
+        fileDistance.write("")
+        fileDistance.close()
+    except:
+        pass
+
 win = tk.Tk()
 win.title("Informations")
 
@@ -69,8 +85,10 @@ while True:
     try:
         win.update()
     except :
+        
         print("Windows is closed.")
         updateRunFile("close")
         break
-        
-
+    
+time.sleep(1)  
+clearFiles()
